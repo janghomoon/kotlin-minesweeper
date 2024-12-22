@@ -25,7 +25,6 @@ class MineController {
                 boardCalculator.openCells(mine.mineBoard, coordinate)
                 OutputView.gameResult(mine.mineBoard)
             }
-
         }
     }
 
@@ -35,5 +34,4 @@ class MineController {
         val mineCount = InputView.getMineCount()
         return Minesweeper(height, width, mineCount)
     }
-
 }

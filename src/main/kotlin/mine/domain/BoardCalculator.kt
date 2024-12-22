@@ -10,11 +10,15 @@ class BoardCalculator {
         }
     }
 
-    private fun isMinesOpenedRow(row: MineRow) = row.mineCells.all { cell ->
-        cell !is MineCell.MINE || cell.isOpen
-    }
+    private fun isMinesOpenedRow(row: MineRow) =
+        row.mineCells.all { cell ->
+            cell !is MineCell.MINE || cell.isOpen
+        }
 
-    fun openCells(mineBoard: List<MineRow>, coordinate: Coordinate) {
+    fun openCells(
+        mineBoard: List<MineRow>,
+        coordinate: Coordinate,
+    ) {
         mineBoard.forEachIndexed { rowIndex, row ->
             updateRows(row, coordinate, rowIndex)
         }
@@ -23,7 +27,7 @@ class BoardCalculator {
     private fun updateRows(
         row: MineRow,
         coordinate: Coordinate,
-        rowIndex: Int
+        rowIndex: Int,
     ) {
         row.mineCells.forEachIndexed { colIndex, cell ->
             updateCell(coordinate, rowIndex, colIndex, cell)
@@ -34,24 +38,37 @@ class BoardCalculator {
         coordinate: Coordinate,
         rowIndex: Int,
         colIndex: Int,
-        cell: MineCell
+        cell: MineCell,
     ) {
         if (isInRange(coordinate, rowIndex, colIndex)) {
             cell.isOpen = true
         }
     }
 
-    private fun isInRange(coordinate: Coordinate, rowIndex: Int, colIndex: Int): Boolean {
-        val rowInRange = rowIndex in (coordinate.y - CELL_POSITIVE)..(coordinate.y + CELL_POSITIVE)
-        val colInRange = colIndex in (coordinate.x - CELL_POSITIVE)..(coordinate.x + CELL_POSITIVE)
+    private fun isInRange(
+        coordinate: Coordinate,
+        rowIndex: Int,
+        colIndex: Int,
+    ): Boolean {
+        val rowInRange = rowIndex in (coordinate.x - CELL_POSITIVE)..(coordinate.x + CELL_POSITIVE)
+
+        // 열(colIndex)은 coordinate.y 기준으로
+        val colInRange = colIndex in (coordinate.y - CELL_POSITIVE)..(coordinate.y + CELL_POSITIVE)
+
+        println("rowIndex: $rowIndex, colIndex: $colIndex")
+        println("coordinate.x: ${coordinate.x}, coordinate.y: ${coordinate.y}")
+        println("rowInRange: $rowInRange, colInRange: $colInRange")
+
         return rowInRange && colInRange
     }
 
-    fun isMineCell(mineBoard: List<MineRow>, coordinate: Coordinate): Boolean {
-        require(coordinate.x in mineBoard.indices) { "지뢰찾기 보드의 크기를 초과할 수 없습니다." }
-        require(coordinate.y in mineBoard.first().mineCells.indices) { "지뢰찾기 보드의 크기를 초과할 수 없습니다." }
+    fun isMineCell(
+        mineBoard: List<MineRow>,
+        coordinate: Coordinate,
+    ): Boolean {
+        require(coordinate.y in mineBoard.indices) { "지뢰찾기 보드의 크기를 초과할 수 없습니다." }
+        require(coordinate.x in mineBoard.first().mineCells.indices) { "지뢰찾기 보드의 크기를 초과할 수 없습니다." }
         return mineBoard[coordinate.y].isMine(coordinate.x)
-
     }
 
     fun calculateBoard(mineBoard: List<MineRow>): List<MineRow> {
@@ -108,7 +125,9 @@ class BoardCalculator {
     ): Int {
         return if (row.isValidCell(col) && row.isMine(col)) {
             MINE_ADD_VALUE
-        } else MINE_NORMAL_VALUE
+        } else {
+            MINE_NORMAL_VALUE
+        }
     }
 
     companion object {

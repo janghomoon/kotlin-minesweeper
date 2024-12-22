@@ -7,7 +7,6 @@ object OutputView {
     const val MINE_SYMBOL = "*"
     const val NOT_OPEN_SYMBOL = "C"
 
-
     private fun printMineBoard(mineRow: MineRow) {
         val rowString = mineRow.mineCells.joinToString(" ") { toDisplayString(it) }
         println(rowString)
@@ -18,7 +17,6 @@ object OutputView {
             mineCell.isOpen.not() -> NOT_OPEN_SYMBOL
             else -> mineCell.getCellValue()
         }
-
     }
 
     fun gameEnd() {
