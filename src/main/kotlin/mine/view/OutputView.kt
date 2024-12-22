@@ -1,27 +1,39 @@
 package mine.view
 
 import mine.domain.MineRow
-import mine.domain.Minesweeper
 import mine.enums.MineCell
 
 object OutputView {
     const val MINE_SYMBOL = "*"
+    const val NOT_OPEN_SYMBOL = "C"
 
-    fun gameStart(minesweeper: Minesweeper) {
-        println("지뢰찾기 게임 시작")
-        minesweeper.mineBoard.forEach { row ->
-            printMineBoard(row)
-        }
-    }
 
     private fun printMineBoard(mineRow: MineRow) {
-        val rowString = mineRow.mineCells.joinToString(" ") { it.toDisplayString() }
+        val rowString = mineRow.mineCells.joinToString(" ") { toDisplayString(it) }
         println(rowString)
     }
 
-    private fun MineCell.toDisplayString(): String =
+    private fun toDisplayString(mineCell: MineCell): String {
+        return when {
+            mineCell.isOpen.not() -> NOT_OPEN_SYMBOL
+            else -> mineCell.getCellValue()
+        }
+
+    }
+
+    fun gameEnd() {
+        println("Lose Game.")
+    }
+
+    private fun MineCell.getCellValue(): String =
         when (this) {
-            is MineCell.MINE -> "*"
+            is MineCell.MINE -> MINE_SYMBOL
             is MineCell.Number -> value.toString()
         }
+
+    fun gameResult(mineBoard: List<MineRow>) {
+        mineBoard.forEach { row ->
+            printMineBoard(row)
+        }
+    }
 }

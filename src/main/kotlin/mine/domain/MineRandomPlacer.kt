@@ -23,7 +23,7 @@ class MineRandomPlacer {
                     if (row to col in minePositions) MineCell.MINE else MineCell.Number(DEFAULT_MINE_NUMBER)
                 }
             }
-        return BoardCalculator().calculateBoard(board.map { MineRow(it) }.toList())
+        return BoardCalculator().calculateBoard(board.map { MineRow(it) })
     }
 
     companion object {

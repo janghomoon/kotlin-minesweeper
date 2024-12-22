@@ -1,8 +1,59 @@
 package mine.domain
 
+import mine.dto.Coordinate
 import mine.enums.MineCell
 
 class BoardCalculator {
+    fun isAllMinesOpened(mineBoard: List<MineRow>): Boolean {
+        return mineBoard.all { row ->
+            isMinesOpenedRow(row)
+        }
+    }
+
+    private fun isMinesOpenedRow(row: MineRow) = row.mineCells.all { cell ->
+        cell !is MineCell.MINE || cell.isOpen
+    }
+
+    fun openCells(mineBoard: List<MineRow>, coordinate: Coordinate) {
+        mineBoard.forEachIndexed { rowIndex, row ->
+            updateRows(row, coordinate, rowIndex)
+        }
+    }
+
+    private fun updateRows(
+        row: MineRow,
+        coordinate: Coordinate,
+        rowIndex: Int
+    ) {
+        row.mineCells.forEachIndexed { colIndex, cell ->
+            updateCell(coordinate, rowIndex, colIndex, cell)
+        }
+    }
+
+    private fun updateCell(
+        coordinate: Coordinate,
+        rowIndex: Int,
+        colIndex: Int,
+        cell: MineCell
+    ) {
+        if (isInRange(coordinate, rowIndex, colIndex)) {
+            cell.isOpen = true
+        }
+    }
+
+    private fun isInRange(coordinate: Coordinate, rowIndex: Int, colIndex: Int): Boolean {
+        val rowInRange = rowIndex in (coordinate.y - CELL_POSITIVE)..(coordinate.y + CELL_POSITIVE)
+        val colInRange = colIndex in (coordinate.x - CELL_POSITIVE)..(coordinate.x + CELL_POSITIVE)
+        return rowInRange && colInRange
+    }
+
+    fun isMineCell(mineBoard: List<MineRow>, coordinate: Coordinate): Boolean {
+        require(coordinate.x in mineBoard.indices) { "지뢰찾기 보드의 크기를 초과할 수 없습니다." }
+        require(coordinate.y in mineBoard.first().mineCells.indices) { "지뢰찾기 보드의 크기를 초과할 수 없습니다." }
+        return mineBoard[coordinate.y].isMine(coordinate.x)
+
+    }
+
     fun calculateBoard(mineBoard: List<MineRow>): List<MineRow> {
         return mineBoard.mapIndexed { rowIndex, currentRow ->
             val beforeRow = mineBoard.getOrNull(rowIndex - 1)
@@ -55,13 +106,9 @@ class BoardCalculator {
         row: MineRow,
         col: Int,
     ): Int {
-        return if (row.isValidCell(col) && isMine(row.mineCells[col])) {
+        return if (row.isValidCell(col) && row.isMine(col)) {
             MINE_ADD_VALUE
         } else MINE_NORMAL_VALUE
-    }
-
-    private fun isMine(mineCell: MineCell): Boolean {
-        return mineCell == MineCell.MINE
     }
 
     companion object {
