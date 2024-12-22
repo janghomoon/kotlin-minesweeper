@@ -37,19 +37,26 @@ class BoardCalculator {
         cell: MineCell
     ) {
         if (isInRange(coordinate, rowIndex, colIndex)) {
-            cell.isOpen = true
+                cell.isOpen = true
         }
     }
 
     private fun isInRange(coordinate: Coordinate, rowIndex: Int, colIndex: Int): Boolean {
-        val rowInRange = rowIndex in (coordinate.y - CELL_POSITIVE)..(coordinate.y + CELL_POSITIVE)
-        val colInRange = colIndex in (coordinate.x - CELL_POSITIVE)..(coordinate.x + CELL_POSITIVE)
+        val rowInRange = rowIndex in (coordinate.x - CELL_POSITIVE)..(coordinate.x + CELL_POSITIVE)
+
+        // 열(colIndex)은 coordinate.y 기준으로
+        val colInRange = colIndex in (coordinate.y - CELL_POSITIVE)..(coordinate.y + CELL_POSITIVE)
+
+        println("rowIndex: $rowIndex, colIndex: $colIndex")
+        println("coordinate.x: ${coordinate.x}, coordinate.y: ${coordinate.y}")
+        println("rowInRange: $rowInRange, colInRange: $colInRange")
+
         return rowInRange && colInRange
     }
 
     fun isMineCell(mineBoard: List<MineRow>, coordinate: Coordinate): Boolean {
-        require(coordinate.x in mineBoard.indices) { "지뢰찾기 보드의 크기를 초과할 수 없습니다." }
-        require(coordinate.y in mineBoard.first().mineCells.indices) { "지뢰찾기 보드의 크기를 초과할 수 없습니다." }
+        require(coordinate.y in mineBoard.indices) { "지뢰찾기 보드의 크기를 초과할 수 없습니다." }
+        require(coordinate.x in mineBoard.first().mineCells.indices) { "지뢰찾기 보드의 크기를 초과할 수 없습니다." }
         return mineBoard[coordinate.y].isMine(coordinate.x)
 
     }
