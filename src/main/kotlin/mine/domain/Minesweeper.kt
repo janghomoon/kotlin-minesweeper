@@ -11,6 +11,14 @@ data class Minesweeper(val height: Int, val width: Int, val mineCount: Int) {
         mineBoard = MineRandomPlacer().placeMines(height, width, mineCount)
     }
 
+    fun isAllMinesOpened(): Boolean {
+        return this.mineBoard.all { row ->
+            isMinesOpenedRow(row)
+        }
+    }
+
+    private fun isMinesOpenedRow(row: MineRow) = row.isAllOpen()
+
     companion object {
         const val MINE_MIN_VALUE = 0
     }

@@ -13,17 +13,25 @@ class MineController {
 
     private fun gameProgress(mine: Minesweeper) {
         val boardCalculator = BoardCalculator()
-        var isRunning = true
-        while (isRunning) {
+        while (true) {
             val coordinate = InputView.gameStart()
             val isMineCell = boardCalculator.isMineCell(mine.mineBoard, coordinate)
-            val isAllMinedOpen = boardCalculator.isAllMinesOpened(mine.mineBoard)
-            if (isMineCell || isAllMinedOpen) {
-                isRunning = false
-                OutputView.gameEnd()
-            } else {
-                boardCalculator.openCells(mine.mineBoard, coordinate)
-                OutputView.gameResult(mine.mineBoard)
+            val isAllMinedOpen = mine.isAllMinesOpened()
+            when {
+                isMineCell -> {
+                    OutputView.gameLoseEnd()
+                    return
+                }
+
+                isAllMinedOpen -> {
+                    OutputView.gameWinEnd()
+                    return
+                }
+
+                else -> {
+                    boardCalculator.openCells(mine.mineBoard, coordinate)
+                    OutputView.gameResult(mine.mineBoard)
+                }
             }
         }
     }

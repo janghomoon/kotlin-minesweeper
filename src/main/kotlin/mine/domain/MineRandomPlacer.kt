@@ -20,7 +20,7 @@ class MineRandomPlacer {
         val board =
             (RANDOM_MINE_START_VALUE until height).map { row ->
                 (RANDOM_MINE_START_VALUE until width).map { col ->
-                    if (row to col in minePositions) MineCell.MINE else MineCell.Number(DEFAULT_MINE_NUMBER)
+                    if (row to col in minePositions) MineCell.MINE else MineCell.initial()
                 }
             }
         return BoardCalculator().calculateBoard(board.map { MineRow(it) })

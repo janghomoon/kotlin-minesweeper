@@ -4,62 +4,13 @@ import mine.dto.Coordinate
 import mine.enums.MineCell
 
 class BoardCalculator {
-    fun isAllMinesOpened(mineBoard: List<MineRow>): Boolean {
-        return mineBoard.all { row ->
-            isMinesOpenedRow(row)
-        }
-    }
-
-    private fun isMinesOpenedRow(row: MineRow) =
-        row.mineCells.all { cell ->
-            cell !is MineCell.MINE || cell.isOpen
-        }
-
     fun openCells(
         mineBoard: List<MineRow>,
         coordinate: Coordinate,
     ) {
         mineBoard.forEachIndexed { rowIndex, row ->
-            updateRows(row, coordinate, rowIndex)
+            UpdateMineRow(row = row, coordinate = coordinate, rowIndex = rowIndex).updateCells()
         }
-    }
-
-    private fun updateRows(
-        row: MineRow,
-        coordinate: Coordinate,
-        rowIndex: Int,
-    ) {
-        row.mineCells.forEachIndexed { colIndex, cell ->
-            updateCell(coordinate, rowIndex, colIndex, cell)
-        }
-    }
-
-    private fun updateCell(
-        coordinate: Coordinate,
-        rowIndex: Int,
-        colIndex: Int,
-        cell: MineCell,
-    ) {
-        if (isInRange(coordinate, rowIndex, colIndex)) {
-            cell.isOpen = true
-        }
-    }
-
-    private fun isInRange(
-        coordinate: Coordinate,
-        rowIndex: Int,
-        colIndex: Int,
-    ): Boolean {
-        val rowInRange = rowIndex in (coordinate.x - CELL_POSITIVE)..(coordinate.x + CELL_POSITIVE)
-
-        // 열(colIndex)은 coordinate.y 기준으로
-        val colInRange = colIndex in (coordinate.y - CELL_POSITIVE)..(coordinate.y + CELL_POSITIVE)
-
-        println("rowIndex: $rowIndex, colIndex: $colIndex")
-        println("coordinate.x: ${coordinate.x}, coordinate.y: ${coordinate.y}")
-        println("rowInRange: $rowInRange, colInRange: $colInRange")
-
-        return rowInRange && colInRange
     }
 
     fun isMineCell(
@@ -75,68 +26,46 @@ class BoardCalculator {
         return mineBoard.mapIndexed { rowIndex, currentRow ->
             val beforeRow = mineBoard.getOrNull(rowIndex - 1)
             val afterRow = mineBoard.getOrNull(rowIndex + 1)
-            calculateRow(currentRow, beforeRow, afterRow)
+
+            calculateRow(
+                AdjacentMineRow(
+                    currentRow = currentRow,
+                    beforeRow = beforeRow,
+                    afterRow = afterRow,
+                ),
+            )
         }
     }
 
-    private fun calculateRow(
-        currentRow: MineRow,
-        beforeRow: MineRow?,
-        afterRow: MineRow?,
-    ): MineRow {
+    private fun calculateRow(adjacentMineRow: AdjacentMineRow): MineRow {
         val updatedCells =
-            currentRow.mineCells.mapIndexed { col, cell ->
-                calculateCell(cell, beforeRow, currentRow, afterRow, col)
+            adjacentMineRow.currentRow.mineCells.mapIndexed { col, cell ->
+                calculateCell(cell, adjacentMineRow, col)
             }
         return MineRow(updatedCells)
     }
 
     private fun calculateCell(
         cell: MineCell,
-        beforeRow: MineRow?,
-        currentRow: MineRow,
-        afterRow: MineRow?,
+        adjacentMineRow: AdjacentMineRow,
         col: Int,
     ): MineCell {
-        return if (cell == MineCell.MINE) {
-            MineCell.MINE
-        } else {
-            val calculatedMines = adjacentMineCalculate(beforeRow, currentRow, afterRow, col)
-            MineCell.Number(calculatedMines)
-        }
-    }
-
-    private fun adjacentMineCalculate(
-        beforeRow: MineRow?,
-        currentRow: MineRow,
-        afterRow: MineRow?,
-        col: Int,
-    ): Int {
-        return directions.sumOf { dx ->
-            listOfNotNull(beforeRow, currentRow, afterRow).sumOf { row ->
-                checkMine(row, col + dx)
+        return when (cell) {
+            is MineCell.MINE -> MineCell.MINE
+            is MineCell.Number -> {
+                val calculatedMines = adjacentMineRow.adjacentMineCalculate(col)
+                cell.copy(value = calculatedMines)
             }
         }
     }
 
-    private fun checkMine(
-        row: MineRow,
-        col: Int,
-    ): Int {
-        return if (row.isValidCell(col) && row.isMine(col)) {
-            MINE_ADD_VALUE
-        } else {
-            MINE_NORMAL_VALUE
-        }
-    }
-
     companion object {
-        private const val MINE_ADD_VALUE = 1
-        private const val MINE_NORMAL_VALUE = 0
+        const val MINE_ADD_VALUE = 1
+        const val MINE_NORMAL_VALUE = 0
         const val CELL_NEGATIVE = -1
         const val CELL_ZERO = 0
         const val CELL_POSITIVE = 1
-        private val directions =
+        val directions =
             listOf(CELL_NEGATIVE, CELL_ZERO, CELL_POSITIVE)
     }
 }

@@ -19,8 +19,12 @@ object OutputView {
         }
     }
 
-    fun gameEnd() {
+    fun gameLoseEnd() {
         println("Lose Game.")
+    }
+
+    fun gameWinEnd() {
+        println("Win Game.")
     }
 
     private fun MineCell.getCellValue(): String =
