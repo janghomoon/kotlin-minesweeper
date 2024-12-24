@@ -3,13 +3,8 @@ package mine.enums
 import mine.domain.MineRandomPlacer.Companion.DEFAULT_MINE_NUMBER
 
 sealed class MineCell {
-    private var _isOpen: Boolean = false
-    val isOpen: Boolean
-        get() = _isOpen
-
-    protected fun setOpen() {
-        _isOpen = true
-    }
+    var isOpen: Boolean = false
+        protected set
 
     data object MINE : MineCell() {
         override fun withOpen(): MineCell = this.apply { setOpen() }
