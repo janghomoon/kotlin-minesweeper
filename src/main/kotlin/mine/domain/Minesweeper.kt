@@ -11,13 +11,13 @@ data class Minesweeper(val height: Int, val width: Int, val mineCount: Int) {
         mineBoard = MineRandomPlacer().placeMines(height, width, mineCount)
     }
 
-    fun isAllMinesOpened(): Boolean {
+    fun areAllSafeCellsOpened(): Boolean {
         return this.mineBoard.all { row ->
-            isMinesOpenedRow(row)
+            areRowSafeCellsOpened(row)
         }
     }
 
-    private fun isMinesOpenedRow(row: MineRow) = row.isAllOpen()
+    private fun areRowSafeCellsOpened(row: MineRow) = row.areAllNonMineCellsOpen()
 
     companion object {
         const val MINE_MIN_VALUE = 0

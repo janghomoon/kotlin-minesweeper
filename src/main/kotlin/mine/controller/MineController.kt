@@ -16,7 +16,7 @@ class MineController {
         while (true) {
             val coordinate = InputView.gameStart()
             val isMineCell = boardCalculator.isMineCell(mine.mineBoard, coordinate)
-            val isAllMinedOpen = mine.isAllMinesOpened()
+            val isAllMinedOpen = mine.areAllSafeCellsOpened()
             when {
                 isMineCell -> {
                     OutputView.gameLoseEnd()

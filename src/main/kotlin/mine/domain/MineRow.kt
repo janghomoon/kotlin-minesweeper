@@ -18,7 +18,7 @@ data class MineRow(val mineCells: List<MineCell>) {
         return cell != MINE
     }
 
-    fun isAllOpen() = this.mineCells.all { cell -> cell !is MINE || cell.isOpen }
+    fun areAllNonMineCellsOpen() = this.mineCells.all { cell -> cell !is MINE || cell.isOpen }
 
     fun updateCellsInRow(
         coordinate: Coordinate,
