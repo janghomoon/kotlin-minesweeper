@@ -13,25 +13,28 @@ data class MineRow(val mineCells: List<MineCell>) {
     fun isMine(index: Int): Boolean {
         return mineCells.getOrNull(index) == MINE
     }
+    private fun isNotMine(cell: MineCell): Boolean {
+        return cell != MINE
+    }
 
     fun isAllOpen() = this.mineCells.all { cell -> cell !is MINE || cell.isOpen }
 
-    fun updateCells(
+    fun updateCellsInRow(
         coordinate: Coordinate,
         rowIndex: Int,
     ) {
         this.mineCells.forEachIndexed { colIndex, cell ->
-            updateCell(coordinate, rowIndex, colIndex, cell)
+            openCellIfInRangeAndNotMine(coordinate, rowIndex, colIndex, cell)
         }
     }
 
-    private fun updateCell(
+    private fun openCellIfInRangeAndNotMine(
         coordinate: Coordinate,
         rowIndex: Int,
         colIndex: Int,
         cell: MineCell,
     ) {
-        if (isInRange(coordinate, rowIndex, colIndex)) {
+        if (isInRange(coordinate, rowIndex, colIndex) && isNotMine(cell)) {
             cell.withOpen()
         }
     }

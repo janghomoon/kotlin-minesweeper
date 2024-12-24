@@ -14,12 +14,12 @@ data class AdjacentMineRow(
     fun adjacentMineCalculate(col: Int): Int {
         return directions.sumOf { dx ->
             this.validRows().sumOf { row ->
-                checkMine(row, col + dx)
+                getCellValue(row, col + dx)
             }
         }
     }
 
-    private fun checkMine(
+    private fun getCellValue(
         row: MineRow,
         col: Int,
     ): Int {

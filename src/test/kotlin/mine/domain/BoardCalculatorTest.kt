@@ -17,11 +17,11 @@ class BoardCalculatorTest {
         val coordinate = Coordinate(1, 0)
         val boardCalculator = BoardCalculator()
         boardCalculator.openCells(mineBoard, coordinate)
-        mineBoard[0].mineCells[0].isOpen shouldBe true
+        mineBoard[0].mineCells[0].isOpen shouldBe false
         mineBoard[0].mineCells[1].isOpen shouldBe true
         mineBoard[1].mineCells[0].isOpen shouldBe true
-        mineBoard[1].mineCells[1].isOpen shouldBe true
-        mineBoard[2].mineCells[0].isOpen shouldBe true
+        mineBoard[1].mineCells[1].isOpen shouldBe false
+        mineBoard[2].mineCells[0].isOpen shouldBe false
         mineBoard[2].mineCells[1].isOpen shouldBe true
     }
 
@@ -29,20 +29,26 @@ class BoardCalculatorTest {
     fun `지뢰가 없는 영역에서 연쇄적으로 셀이 모두 열린다`() {
         val mineBoard =
             listOf(
-                MineRow(listOf(MineCell.Number(0), MineCell.Number(0), MineCell.Number(0))),
-                MineRow(listOf(MineCell.Number(0), MineCell.Number(0), MineCell.Number(0))),
-                MineRow(listOf(MineCell.Number(0), MineCell.Number(0), MineCell.Number(0))),
+                MineRow(listOf(MineCell.initial(), MineCell.initial(), MineCell.initial())),
+                MineRow(listOf(MineCell.initial(), MineCell.initial(), MineCell.MINE)),
+                MineRow(listOf(MineCell.initial(), MineCell.MINE, MineCell.initial())),
             )
         val coordinate = Coordinate(1, 1)
         val boardCalculator = BoardCalculator()
 
         boardCalculator.openCells(mineBoard, coordinate)
 
-        mineBoard.forEach { row ->
-            row.mineCells.forEach { cell ->
-                cell.isOpen shouldBe true
-            }
-        }
+        mineBoard[0].mineCells[0].isOpen shouldBe true
+        mineBoard[0].mineCells[1].isOpen shouldBe true
+        mineBoard[0].mineCells[2].isOpen shouldBe true
+
+        mineBoard[1].mineCells[0].isOpen shouldBe true
+        mineBoard[1].mineCells[1].isOpen shouldBe true
+        mineBoard[1].mineCells[2].isOpen shouldBe false
+
+        mineBoard[2].mineCells[0].isOpen shouldBe true
+        mineBoard[2].mineCells[1].isOpen shouldBe false
+        mineBoard[2].mineCells[2].isOpen shouldBe true
     }
 
     @Test

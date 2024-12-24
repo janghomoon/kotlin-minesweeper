@@ -8,6 +8,6 @@ data class UpdateMineRow(
     val rowIndex: Int,
 ) {
     fun updateCells() {
-        row.updateCells(coordinate, rowIndex)
+        row.updateCellsInRow(coordinate, rowIndex)
     }
 }
