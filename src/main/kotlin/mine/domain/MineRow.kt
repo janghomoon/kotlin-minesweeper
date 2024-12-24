@@ -13,6 +13,7 @@ data class MineRow(val mineCells: List<MineCell>) {
     fun isMine(index: Int): Boolean {
         return mineCells.getOrNull(index) == MINE
     }
+
     private fun isNotMine(cell: MineCell): Boolean {
         return cell != MINE
     }

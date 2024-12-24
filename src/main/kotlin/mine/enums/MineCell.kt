@@ -7,14 +7,16 @@ sealed class MineCell {
         protected set
 
     data object MINE : MineCell() {
-        override fun withOpen(): MineCell = this.apply { setOpen() }
+        override fun withOpen(): MineCell = openCell()
     }
 
     data class Number(val value: Int) : MineCell() {
-        override fun withOpen(): MineCell = this.apply { setOpen() }
+        override fun withOpen(): MineCell = openCell()
     }
 
     abstract fun withOpen(): MineCell
+
+    fun openCell(): MineCell = this.apply { isOpen = true }
 
     companion object {
         fun initial(): Number {
