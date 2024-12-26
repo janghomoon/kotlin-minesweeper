@@ -8,8 +8,28 @@ class BoardCalculator {
         mineBoard: List<MineRow>,
         coordinate: Coordinate,
     ) {
-        mineBoard.forEachIndexed { rowIndex, row ->
-            UpdateMineRow(row = row, coordinate = coordinate, rowIndex = rowIndex).updateCells()
+        val (x, y) = coordinate
+        val cell = mineBoard[x].mineCells[y]
+        if (cell.isOpen) return
+        cell.withOpen()
+        when (cell) {
+            is MineCell.Number -> {
+                selectedCellIfSafety(cell, mineBoard, coordinate)
+            }
+
+            else -> return
+        }
+    }
+
+    private fun selectedCellIfSafety(
+        cell: MineCell.Number,
+        mineBoard: List<MineRow>,
+        coordinate: Coordinate,
+    ) {
+        if (cell.value == CELL_ZERO) {
+            mineBoard.forEachIndexed { rowIndex, row ->
+                UpdateMineRow(row = row, coordinate = coordinate, rowIndex = rowIndex).updateCells()
+            }
         }
     }
 

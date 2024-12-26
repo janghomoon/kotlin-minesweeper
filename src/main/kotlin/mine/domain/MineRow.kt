@@ -25,18 +25,9 @@ data class MineRow(val mineCells: List<MineCell>) {
         rowIndex: Int,
     ) {
         this.mineCells.forEachIndexed { colIndex, cell ->
-            openCellIfInRangeAndNotMine(coordinate, rowIndex, colIndex, cell)
-        }
-    }
-
-    private fun openCellIfInRangeAndNotMine(
-        coordinate: Coordinate,
-        rowIndex: Int,
-        colIndex: Int,
-        cell: MineCell,
-    ) {
-        if (isInRange(coordinate, rowIndex, colIndex) && isNotMine(cell)) {
-            cell.withOpen()
+            if (isInRange(coordinate, rowIndex, colIndex) && isNotMine(cell)) {
+                cell.withOpen()
+            }
         }
     }
 
