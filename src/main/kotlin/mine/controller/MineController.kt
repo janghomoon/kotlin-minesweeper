@@ -29,7 +29,7 @@ class MineController {
                 }
 
                 else -> {
-                    boardCalculator.openCells(mine.mineBoard, coordinate)
+                    mine.openCells(coordinate)
                     OutputView.gameResult(mine.mineBoard)
                 }
             }

@@ -1,5 +1,9 @@
 package mine.domain
 
+import mine.domain.BoardCalculator.Companion.CELL_ZERO
+import mine.dto.Coordinate
+import mine.enums.MineCell
+
 data class Minesweeper(val height: Int, val width: Int, val mineCount: Int) {
     val mineBoard: List<MineRow>
 
@@ -14,6 +18,33 @@ data class Minesweeper(val height: Int, val width: Int, val mineCount: Int) {
     fun areAllSafeCellsOpened(): Boolean {
         return this.mineBoard.all { row ->
             areRowSafeCellsOpened(row)
+        }
+    }
+    fun openCells(
+        coordinate: Coordinate
+    ) {
+        val (x, y) = coordinate
+        val cell = mineBoard[x].mineCells[y]
+        if (cell.isOpen) return
+        cell.withOpen()
+        when (cell) {
+            is MineCell.Number -> {
+                selectedCellIfSafety(cell, mineBoard, coordinate)
+            }
+
+            else -> return
+        }
+    }
+
+    private fun selectedCellIfSafety(
+        cell: MineCell.Number,
+        mineBoard: List<MineRow>,
+        coordinate: Coordinate,
+    ) {
+        if (cell.value == CELL_ZERO) {
+            mineBoard.forEachIndexed { rowIndex, row ->
+                UpdateMineRow(row = row, coordinate = coordinate, rowIndex = rowIndex).updateCells()
+            }
         }
     }
 
