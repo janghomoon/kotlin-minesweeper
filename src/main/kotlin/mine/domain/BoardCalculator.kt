@@ -4,7 +4,6 @@ import mine.dto.Coordinate
 import mine.enums.MineCell
 
 class BoardCalculator {
-
     fun isMineCell(
         mineBoard: List<MineRow>,
         coordinate: Coordinate,

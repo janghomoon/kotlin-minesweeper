@@ -13,6 +13,4 @@ data class MineRow(val mineCells: List<MineCell>) {
     }
 
     fun areAllNonMineCellsOpen() = this.mineCells.all { cell -> cell !is MINE || cell.isOpen }
-
-
 }

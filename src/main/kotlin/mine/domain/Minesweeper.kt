@@ -6,15 +6,22 @@ import mine.domain.BoardCalculator.Companion.CELL_ZERO
 import mine.dto.Coordinate
 import mine.enums.MineCell
 
-data class Minesweeper(val height: Int, val width: Int, val mineCount: Int) {
-    val mineBoard: List<MineRow>
-
+data class Minesweeper(
+    val height: Int,
+    val width: Int,
+    val mineCount: Int,
+    val mineBoard: List<MineRow> =
+        MineRandomPlacer().placeMines(
+            height,
+            width,
+            mineCount,
+        ),
+) {
     init {
         require(height > MINE_MIN_VALUE) { "높이는 0보다 커야합니다." }
         require(width > MINE_MIN_VALUE) { "너비는 0보다 커야합니다." }
         require(mineCount > MINE_MIN_VALUE) { "지뢰 개수는 0보다 커야합니다." }
         require(mineCount <= height * width) { "지뢰 개수는 전체 칸의 수보다 많을 수 없습니다." }
-        mineBoard = MineRandomPlacer().placeMines(height, width, mineCount)
     }
 
     fun areAllSafeCellsOpened(): Boolean {
@@ -23,9 +30,7 @@ data class Minesweeper(val height: Int, val width: Int, val mineCount: Int) {
         }
     }
 
-    fun openCells(
-        coordinate: Coordinate
-    ) {
+    fun openCells(coordinate: Coordinate) {
         val (x, y) = coordinate
         val cell = mineBoard[x].mineCells[y]
         if (isOpen(cell)) return
@@ -49,13 +54,12 @@ data class Minesweeper(val height: Int, val width: Int, val mineCount: Int) {
             getNeighbors.forEach { neighbor ->
                 handleCell(neighbor.first, neighbor.second)
             }
-
         }
     }
 
     private fun handleCell(
         rowIndex: Int,
-        colIndex: Int
+        colIndex: Int,
     ) {
         val currentCell = mineBoard[rowIndex].mineCells[colIndex]
         when {
@@ -81,7 +85,7 @@ data class Minesweeper(val height: Int, val width: Int, val mineCount: Int) {
 
     private fun getNeighbors(
         rowIndex: Int,
-        colIndex: Int
+        colIndex: Int,
     ): List<Pair<Int, Int>> {
         return directions.map { (dx, dy) -> rowIndex + dx to colIndex + dy }
             .filter { (row, col) ->
@@ -93,15 +97,16 @@ data class Minesweeper(val height: Int, val width: Int, val mineCount: Int) {
 
     companion object {
         const val MINE_MIN_VALUE = 0
-        private val directions = listOf(
-            CELL_NEGATIVE to CELL_NEGATIVE,
-            CELL_NEGATIVE to CELL_ZERO,
-            CELL_NEGATIVE to CELL_POSITIVE,
-            CELL_ZERO to CELL_NEGATIVE,
-            CELL_ZERO to CELL_POSITIVE,
-            CELL_POSITIVE to CELL_NEGATIVE,
-            CELL_POSITIVE to CELL_ZERO,
-            CELL_POSITIVE to CELL_POSITIVE
-        )
+        private val directions =
+            listOf(
+                CELL_NEGATIVE to CELL_NEGATIVE,
+                CELL_NEGATIVE to CELL_ZERO,
+                CELL_NEGATIVE to CELL_POSITIVE,
+                CELL_ZERO to CELL_NEGATIVE,
+                CELL_ZERO to CELL_POSITIVE,
+                CELL_POSITIVE to CELL_NEGATIVE,
+                CELL_POSITIVE to CELL_ZERO,
+                CELL_POSITIVE to CELL_POSITIVE,
+            )
     }
 }

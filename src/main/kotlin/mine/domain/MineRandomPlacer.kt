@@ -8,8 +8,6 @@ class MineRandomPlacer {
         width: Int,
         mineCount: Int,
     ): List<MineRow> {
-        require(mineCount <= height * width) { "지뢰 개수는 전체 칸 수를 초과할 수 없습니다." }
-
         val positions =
             (RANDOM_MINE_START_VALUE until height).flatMap { row ->
                 (RANDOM_MINE_START_VALUE until width).map { col -> row to col }
