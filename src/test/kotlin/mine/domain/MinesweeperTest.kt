@@ -9,17 +9,19 @@ import org.junit.jupiter.api.assertThrows
 class MinesweeperTest {
     @Test
     fun `선택셀이  0이 아닐때(인접 폭탄) 해당셀만 열린다`() {
-        val tempBoard = listOf(
-            MineRow(listOf(MineCell.initial(), MineCell.initial(), MineCell.initial())),
-            MineRow(listOf(MineCell.initial(), MineCell.initial(), MineCell.MINE)),
-            MineRow(listOf(MineCell.initial(), MineCell.MINE, MineCell.Number(2))),
-        )
-        val minesweeper = Minesweeper(
-            height = 3,
-            width = 3,
-            mineCount = 2,
-            mineBoard = tempBoard,
-        )
+        val tempBoard =
+            listOf(
+                MineRow(listOf(MineCell.initial(), MineCell.initial(), MineCell.initial())),
+                MineRow(listOf(MineCell.initial(), MineCell.initial(), MineCell.MINE)),
+                MineRow(listOf(MineCell.initial(), MineCell.MINE, MineCell.Number(2))),
+            )
+        val minesweeper =
+            Minesweeper(
+                height = 3,
+                width = 3,
+                mineCount = 2,
+                mineBoard = tempBoard,
+            )
 
         val coordinate = Coordinate(1, 1)
 
@@ -102,18 +104,5 @@ class MinesweeperTest {
 
         val exception3 = assertThrows<IllegalArgumentException> { Minesweeper(5, 5, 0) }
         exception3.message shouldBe "지뢰 개수는 0보다 커야합니다."
-    }
-
-    @Test
-    fun `지뢰 좌표기 모두열렸을때`() {
-        val mineBoard =
-            listOf(
-                MineRow(listOf(MineCell.MINE, MineCell.Number(1), MineCell.Number(1))),
-                MineRow(listOf(MineCell.Number(2), MineCell.MINE, MineCell.Number(3))),
-                MineRow(listOf(MineCell.MINE, MineCell.Number(4), MineCell.MINE)),
-            )
-        mineBoard[0].mineCells[0].withOpen()
-        mineBoard[1].mineCells[2].withOpen()
-        mineBoard[2].mineCells[0].withOpen()
     }
 }
