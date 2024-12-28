@@ -3,23 +3,66 @@ package mine.domain
 import io.kotest.matchers.shouldBe
 import mine.dto.Coordinate
 import mine.enums.MineCell
+import mine.view.OutputView
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 class MinesweeperTest {
     @Test
-    fun `선택셀이  0이 아닐때(인접 폭탄) 해당셀만 열린다`() {
+    fun `인접셀이 폭탄이 있는경우 확장되지 않는다`() {
         val tempBoard =
             listOf(
-                MineRow(listOf(MineCell.initial(), MineCell.initial(), MineCell.initial())),
-                MineRow(listOf(MineCell.initial(), MineCell.initial(), MineCell.MINE)),
-                MineRow(listOf(MineCell.initial(), MineCell.MINE, MineCell.Number(2))),
+                MineRow(
+                    listOf(
+                        MineCell.initial(),
+                        MineCell.initial(),
+                        MineCell.initial(),
+                        MineCell.Number(1),
+                        MineCell.Number(1),
+                    ),
+                ),
+                MineRow(
+                    listOf(
+                        MineCell.initial(),
+                        MineCell.initial(),
+                        MineCell.Number(1),
+                        MineCell.Number(2),
+                        MineCell.MINE,
+                    ),
+                ),
+                MineRow(
+                    listOf(
+                        MineCell.initial(),
+                        MineCell.initial(),
+                        MineCell.Number(1),
+                        MineCell.MINE,
+                        MineCell.Number(2),
+                    ),
+                ),
+                MineRow(
+                    listOf(
+                        MineCell.Number(1),
+                        MineCell.Number(2),
+                        MineCell.MINE,
+                        MineCell.Number(2),
+                        MineCell.Number(1),
+                    ),
+                ),
+                MineRow(
+                    listOf(
+                        MineCell.Number(1),
+                        MineCell.MINE,
+                        MineCell.Number(2),
+                        MineCell.Number(1),
+                        MineCell.initial(),
+                    ),
+                ),
             )
         val minesweeper =
             Minesweeper(
-                height = 3,
-                width = 3,
-                mineCount = 2,
+                height = 5,
+                width = 5,
+                mineCount = 4,
                 mineBoard = tempBoard,
             )
 
@@ -28,10 +71,109 @@ class MinesweeperTest {
         minesweeper.openCells(coordinate)
 
         val resultMineBoard = minesweeper.mineBoard
+        OutputView.gameResult(resultMineBoard)
 
-        resultMineBoard[1].mineCells[2].isOpen shouldBe false
-        resultMineBoard[2].mineCells[1].isOpen shouldBe false
-        resultMineBoard[2].mineCells[2].isOpen shouldBe false
+        (targetRange(0, 3)).forEach { row ->
+            val (start, end) =
+                when {
+                    row <= 1 -> 0 to 3
+                    row == 2 -> 0 to 2
+                    else -> 0 to 1
+                }
+            (targetRange(start, end)).forEach { col ->
+                resultMineBoard[row].mineCells[col].isOpen shouldBe true
+            }
+        }
+
+        // close Cell
+        (targetRange(0, 4)).forEach { row ->
+            val (start, end) =
+                when {
+                    row <= 1 -> 4 to 4
+                    row == 2 -> 3 to 4
+                    row == 3 -> 2 to 4
+                    else -> 0 to 4
+                }
+
+            (targetRange(start, end)).forEach { col ->
+                resultMineBoard[row].mineCells[col].isOpen shouldBe false
+            }
+        }
+    }
+
+    private fun targetRange(
+        start: Int,
+        end: Int,
+    ) = start..end
+
+    @Test
+    fun `선택셀이  0이 아닐때(인접 폭탄) 해당셀만 열린다`() {
+        val tempBoard =
+            listOf(
+                MineRow(
+                    listOf(
+                        MineCell.initial(),
+                        MineCell.initial(),
+                        MineCell.initial(),
+                        MineCell.Number(1),
+                        MineCell.Number(1),
+                    ),
+                ),
+                MineRow(
+                    listOf(
+                        MineCell.initial(),
+                        MineCell.initial(),
+                        MineCell.Number(1),
+                        MineCell.Number(2),
+                        MineCell.MINE,
+                    ),
+                ),
+                MineRow(
+                    listOf(
+                        MineCell.initial(),
+                        MineCell.initial(),
+                        MineCell.Number(1),
+                        MineCell.MINE,
+                        MineCell.Number(2),
+                    ),
+                ),
+                MineRow(
+                    listOf(
+                        MineCell.Number(1),
+                        MineCell.Number(2),
+                        MineCell.MINE,
+                        MineCell.Number(2),
+                        MineCell.Number(1),
+                    ),
+                ),
+                MineRow(
+                    listOf(
+                        MineCell.Number(1),
+                        MineCell.MINE,
+                        MineCell.Number(2),
+                        MineCell.Number(1),
+                        MineCell.initial(),
+                    ),
+                ),
+            )
+        val minesweeper =
+            Minesweeper(
+                height = 5,
+                width = 5,
+                mineCount = 4,
+                mineBoard = tempBoard,
+            )
+
+        val coordinate = Coordinate(4, 0)
+
+        minesweeper.openCells(coordinate)
+
+        val resultMineBoard = minesweeper.mineBoard
+        val closedCellCount =
+            resultMineBoard.sumOf { row ->
+                row.mineCells.count { cell -> !cell.isOpen }
+            }
+        closedCellCount shouldBe 24
     }
 
     @Test

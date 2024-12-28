@@ -31,63 +31,71 @@ data class Minesweeper(
     }
 
     fun openCells(coordinate: Coordinate) {
-        val (x, y) = coordinate
-        val cell = mineBoard[x].mineCells[y]
-        if (isOpen(cell)) return
-        cell.withOpen()
-        when (cell) {
-            is MineCell.Number -> {
-                selectedCellIfSafety(cell, coordinate)
-            }
+        val visited = mutableSetOf<Coordinate>()
+        val queue = ArrayDeque<Coordinate>()
+        queue.add(coordinate)
 
-            else -> return
+        while (queue.isNotEmpty()) {
+            val (x, y) = queue.removeFirst()
+            val currentCell = mineBoard[x].mineCells[y]
+            if (isOpenedCellOrVisitedCell(currentCell, x, y, visited)) continue
+            visited.add(Coordinate(x, y))
+
+            if (isMine(currentCell)) continue
+
+            openCell(currentCell, x, y, visited, queue)
         }
     }
 
-    private fun selectedCellIfSafety(
-        cell: MineCell.Number,
-        coordinate: Coordinate,
+    private fun openCell(
+        currentCell: MineCell,
+        x: Int,
+        y: Int,
+        visited: MutableSet<Coordinate>,
+        queue: ArrayDeque<Coordinate>,
     ) {
-        val (x, y) = coordinate
-        if (cell.value == CELL_ZERO) {
-            val getNeighbors = getNeighbors(x, y)
-            getNeighbors.forEach { neighbor ->
-                handleCell(neighbor.first, neighbor.second)
-            }
-        }
-    }
-
-    private fun handleCell(
-        rowIndex: Int,
-        colIndex: Int,
-    ) {
-        val currentCell = mineBoard[rowIndex].mineCells[colIndex]
-        when {
-            isMine(currentCell) -> return
-            isOpen(currentCell) -> return
-            currentCell is MineCell.Number -> {
-                openCell(currentCell)
-            }
-
-            else -> return
-        }
-    }
-
-    private fun openCell(currentCell: MineCell.Number) {
-        if (currentCell.value == CELL_ZERO) {
+        if (currentCell is MineCell.Number) {
             currentCell.withOpen()
+            if (isCellGreaterThanZero(currentCell)) return
+            val neighbors = getNeighbors(x, y)
+
+            addNeighborsToQueueIfUnvisited(neighbors, visited, queue)
         }
     }
 
-    private fun isOpen(currentCell: MineCell) = currentCell.isOpen
+    private fun addNeighborsToQueueIfUnvisited(
+        neighbors: List<Coordinate>,
+        visited: MutableSet<Coordinate>,
+        queue: ArrayDeque<Coordinate>,
+    ) {
+        neighbors.forEach { (neighborRow, neighborCol) ->
+            val neighborCoordinate = Coordinate(neighborRow, neighborCol)
+            if (neighborCoordinate !in visited) queue.add(neighborCoordinate)
+        }
+    }
 
-    private fun isMine(currentCell: MineCell) = currentCell is MineCell.MINE
+    private fun isCellGreaterThanZero(currentCell: MineCell.Number): Boolean {
+        return currentCell.value > CELL_ZERO
+    }
+
+    private fun isMine(currentCell: MineCell): Boolean {
+        return currentCell is MineCell.MINE
+    }
+
+    private fun isOpenedCellOrVisitedCell(
+        currentCell: MineCell,
+        x: Int,
+        y: Int,
+        visited: MutableSet<Coordinate>,
+    ): Boolean {
+        return currentCell.isOpen || Coordinate(x, y) in visited
+    }
 
     private fun getNeighbors(
         rowIndex: Int,
         colIndex: Int,
-    ): List<Pair<Int, Int>> {
-        return directions.map { (dx, dy) -> rowIndex + dx to colIndex + dy }
+    ): List<Coordinate> {
+        return directions.map { (dx, dy) -> Coordinate(rowIndex + dx, colIndex + dy) }
             .filter { (row, col) ->
                 row in mineBoard.indices && col in mineBoard[row].mineCells.indices
             }
