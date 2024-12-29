@@ -8,8 +8,6 @@ class MineRandomPlacer {
         width: Int,
         mineCount: Int,
     ): List<MineRow> {
-        require(mineCount <= height * width) { "지뢰 개수는 전체 칸 수를 초과할 수 없습니다." }
-
         val positions =
             (RANDOM_MINE_START_VALUE until height).flatMap { row ->
                 (RANDOM_MINE_START_VALUE until width).map { col -> row to col }
@@ -20,10 +18,10 @@ class MineRandomPlacer {
         val board =
             (RANDOM_MINE_START_VALUE until height).map { row ->
                 (RANDOM_MINE_START_VALUE until width).map { col ->
-                    if (row to col in minePositions) MineCell.MINE else MineCell.Number(DEFAULT_MINE_NUMBER)
+                    if (row to col in minePositions) MineCell.MINE else MineCell.initial()
                 }
             }
-        return BoardCalculator().calculateBoard(board.map { MineRow(it) }.toList())
+        return BoardCalculator().calculateBoard(board.map { MineRow(it) })
     }
 
     companion object {
