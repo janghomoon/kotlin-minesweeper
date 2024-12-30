@@ -8,8 +8,7 @@ data class MineRow(val mineCells: List<MineCell>) {
         return mineCells.all {
             when (it) {
                 is MINE -> !it.isOpen
-                is Number -> it.isOpen
-                else -> throw IllegalArgumentException("Unknown cell type")
+                is MineCell.Number -> it.isOpen
             }
         }
     }
