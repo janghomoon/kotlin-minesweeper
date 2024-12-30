@@ -21,18 +21,33 @@ class MineBoard(val rows: List<MineRow>) {
             val (x, y) = queue.removeFirst()
             val currentCell = getCell(Coordinate(x, y)) ?: continue
 
-            if (currentCell.isOpen || visited.contains(Coordinate(x, y))) continue
+            if (isOpenedCellOrVisitedCell(currentCell, visited, x, y)) continue
             visited.add(Coordinate(x, y))
 
             if (currentCell is MineCell.MINE) continue
 
             currentCell.withOpen()
-            if (currentCell is MineCell.Number && currentCell.value == MINE_MIN_VALUE) {
+
+            if (isCellValueZero(currentCell)) {
                 val neighbors = getNeighbors(Coordinate(x, y))
                 neighbors.filterNot { it in visited }.forEach(queue::add)
             }
         }
     }
+
+    private fun isCellValueZero(cell: MineCell): Boolean {
+        if (cell is MineCell.Number) {
+            return cell.value == MINE_MIN_VALUE
+        }
+        return false
+    }
+
+    private fun isOpenedCellOrVisitedCell(
+        currentCell: MineCell,
+        visited: MutableSet<Coordinate>,
+        x: Int,
+        y: Int
+    ) = currentCell.isOpen || visited.contains(Coordinate(x, y))
 
     fun areAllSafeCellsOpened(): Boolean {
         return rows.all { it.areAllNonMineCellsOpen() }
