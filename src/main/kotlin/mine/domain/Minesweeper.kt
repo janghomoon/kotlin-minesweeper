@@ -40,28 +40,16 @@ data class Minesweeper(
             val currentCell = mineBoard[x].mineCells[y]
             if (isOpenedCellOrVisitedCell(currentCell, x, y, visited)) continue
             visited.add(Coordinate(x, y))
-
             if (isMine(currentCell)) continue
-
-            openCell(currentCell, x, y, visited, queue)
-        }
-    }
-
-    private fun openCell(
-        currentCell: MineCell,
-        x: Int,
-        y: Int,
-        visited: MutableSet<Coordinate>,
-        queue: ArrayDeque<Coordinate>,
-    ) {
-        if (currentCell is MineCell.Number) {
-            currentCell.withOpen()
-            if (isCellGreaterThanZero(currentCell)) return
+            val currentNumberCell = currentCell as MineCell.Number
+            currentNumberCell.withOpen()
+            if (isCellGreaterThanZero(currentNumberCell)) continue
             val neighbors = getNeighbors(x, y)
-
             addNeighborsToQueueIfUnvisited(neighbors, visited, queue)
         }
     }
+
+
 
     private fun addNeighborsToQueueIfUnvisited(
         neighbors: List<Coordinate>,
